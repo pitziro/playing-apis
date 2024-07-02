@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { PopupButton } from 'react-calendly';
 
-const CalendlyEmbed = ({ userName, userEmail, onEventScheduled }) => {
-	const CALENDLY_URL = 'https://calendly.com/perspectivascap/agendarcita';
+const CALENDLY_URL = 'https://calendly.com/perspectivascap/agendarcita';
 
+const CalendlyEmbed = ({ userName, userEmail, onEventScheduled }) => {
 	useEffect(() => {
 		window.addEventListener('message', (e) => {
 			if (

@@ -22,7 +22,10 @@ export const CheckAgenda = () => {
             }
          )
          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
+            const errorData = await response.json()
+            throw new Error(
+               `HTTP error! status: ${response.status}, message: ${errorData.error.message}`
+            )
          }
 
          const data = await response.json()
@@ -34,9 +37,45 @@ export const CheckAgenda = () => {
       }
    }
 
+   const freeBusy = async () => {
+      try {
+         const response = await fetch(
+            'https://www.googleapis.com/calendar/v3/freeBusy',
+            {
+               method: 'POST',
+               headers: {
+                  Authorization: `Bearer ${user.access_token}`,
+                  'Content-Type': 'application/json',
+               },
+               body: JSON.stringify({
+                  timeMin: new Date().toISOString(),
+                  timeMax: new Date(
+                     Date.now() + 90 * 24 * 60 * 60 * 1000
+                  ).toISOString(),
+                  items: [{ id: guestEmail }],
+               }),
+            }
+         )
+
+         if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(
+               `HTTP error! status: ${response.status}, message: ${errorData.error.message}`
+            )
+         }
+
+         const data = await response.json()
+         setEvents(data.items || [])
+         console.log('Events:', data)
+      } catch (error) {
+         console.error('Error fetching free/busy:', error)
+      }
+   }
+
    async function searchAgenda() {
       setEmailDone(true)
-      fetchEvents()
+      // fetchEvents()
+      freeBusy()
    }
 
    return (

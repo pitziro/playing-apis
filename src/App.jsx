@@ -1,23 +1,26 @@
-import Reserva from './pages/Reserva';
+import Reserva from './pages/Reserva'
 
-import Calendar from './components/Calendar';
-import LoginButton from './components/LoginButton';
-import { UserContext } from './context/userContext';
-import { useContext } from 'react';
+import { UserContext } from './context/userContext'
+import { useContext } from 'react'
+import { CheckAgenda } from './pages/CheckAgenda'
 
-const docEmail = 'santiagosarmiento92@gmail.com';
+//import Calendar from './components/Calendar';
+import LoginButton from './components/LoginButton'
+
 function App() {
-	const { user } = useContext(UserContext);
+   const { user } = useContext(UserContext)
 
-	return (
-		<>
-			<Reserva />
-			<hr />
-			{!user && <LoginButton />}
+   return (
+      <>
+         <Reserva />
+         <hr />
+         {!user && <LoginButton />}
 
-			<Calendar doctorEmail={docEmail} />
-		</>
-	);
+         {/* <Calendar doctorEmail={inputDoctorEmail} /> */}
+
+         <CheckAgenda />
+      </>
+   )
 }
 
-export default App;
+export default App

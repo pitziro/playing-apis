@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { format, addMinutes } from 'date-fns';
+import { useGoogleCalendar } from '../utils/useGoogleCalendar';
 
 const GOOGLE_CALENDAR_API = 'https://www.googleapis.com/calendar/v3';
 
@@ -9,56 +9,20 @@ const AppointmentModal = ({
 	slot,
 	doctorEmail,
 	patientEmail,
-	accessToken,
 }) => {
 	if (!isOpen || !slot) return null;
 
 	const endTime = addMinutes(slot.start, 60);
+	const { scheduleAppointment } = useGoogleCalendar();
 
-	const handleConfirm = async () => {
-		console.log(slot.start.toISOString());
-		console.log(endTime.toISOString());
-		try {
-			await axios.post(
-				`${GOOGLE_CALENDAR_API}/calendars/primary/events`,
-				{
-					summary: 'Psyco Appointment',
-					description: `Appointment with ${patientEmail}`,
-					start: {
-						dateTime: slot.start.toISOString(),
-						timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-					},
-					end: {
-						dateTime: endTime.toISOString(),
-						timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-					},
-					attendees: [{ email: patientEmail }, { email: doctorEmail }],
-				},
-				{
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Content-Type': 'application/json',
-					},
-				}
-			);
-			console.log('Confirming appointment:', {
-				slot,
-				doctorEmail,
-				patientEmail,
-			});
-			onClose();
-		} catch (error) {
-			if (error.response) {
-				console.error('Error response:', error.response.data);
-				console.error('Error status:', error.response.status);
-			} else if (error.request) {
-				console.error('Error request:', error.request);
-			} else {
-				console.error('Error message:', error.message);
-			}
-			console.error('Error config:', error.config);
-			alert('Error confirming appointment. Please try again.');
-		}
+	const handleSchedule = async () => {
+		await scheduleAppointment(
+			doctorEmail,
+			slot.start.toISOString(),
+			endTime.toISOString(),
+			patientEmail
+		);
+		onClose();
 	};
 
 	if (!isOpen) return null;
@@ -93,7 +57,7 @@ const AppointmentModal = ({
 				<p>
 					Time: {format(slot.start, 'h:mm a')} - {format(endTime, 'h:mm a')}
 				</p>
-				<button type='button' onClick={handleConfirm}>
+				<button type='button' onClick={handleSchedule}>
 					Confirm
 				</button>
 				<button type='button' onClick={onClose}>

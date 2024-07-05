@@ -1,8 +1,8 @@
-// useGoogleCalendar.js
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { parseISO } from 'date-fns';
+
 import { UserContext } from '../context/userContext';
+import fetchEvents from './fetchEvents';
 
 const GOOGLE_CALENDAR_API = 'https://www.googleapis.com/calendar/v3';
 
@@ -12,46 +12,11 @@ export const useGoogleCalendar = (doctorEmail) => {
 	const { user } = useContext(UserContext);
 
 	useEffect(() => {
-		const fetchEvents = async () => {
-			if (!user || !user.access_token) {
-				setLoading(false);
-				return;
-			}
-
-			try {
-				const response = await axios.get(
-					`${GOOGLE_CALENDAR_API}/calendars/${doctorEmail}/events`,
-					{
-						headers: {
-							Authorization: `Bearer ${user.access_token}`,
-						},
-						params: {
-							timeMin: new Date().toISOString(),
-							maxResults: 100,
-							singleEvents: true,
-							orderBy: 'startTime',
-						},
-					}
-				);
-
-				const processedEvents = response.data.items.map((event) => ({
-					...event,
-					start: parseISO(event.start.dateTime || event.start.date),
-					end: parseISO(event.end.dateTime || event.end.date),
-				}));
-
-				setEvents(processedEvents);
-			} catch (error) {
-				console.error('Error fetching events:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchEvents();
+		fetchEvents(doctorEmail, user, setLoading, setEvents);
 	}, [doctorEmail, user]);
 
 	const checkAvailability = async (start, end) => {
+		console.log('checkeando disponibilidad');
 		if (!user || !user.access_token) return false;
 
 		try {
@@ -68,7 +33,7 @@ export const useGoogleCalendar = (doctorEmail) => {
 					},
 				}
 			);
-
+			console.log(response.data);
 			return response.data.calendars[doctorEmail].busy.length === 0;
 		} catch (error) {
 			console.error('Error checking availability:', error);
@@ -76,21 +41,26 @@ export const useGoogleCalendar = (doctorEmail) => {
 		}
 	};
 
-	const scheduleAppointment = async (start, end, patientEmail) => {
+	const scheduleAppointment = async (
+		doctorEmail,
+		starting,
+		ending,
+		patientEmail
+	) => {
 		if (!user || !user.access_token) return false;
 
 		try {
 			await axios.post(
-				`${GOOGLE_CALENDAR_API}/calendars/${doctorEmail}/events`,
+				`${GOOGLE_CALENDAR_API}/calendars/primary/events`,
 				{
-					summary: 'Appointment',
-					description: `Appointment with ${patientEmail}`,
+					summary: 'Pysco Appointment',
+					description: `Terapia con ${patientEmail}`,
 					start: {
-						dateTime: start.toISOString(),
+						dateTime: starting,
 						timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 					},
 					end: {
-						dateTime: end.toISOString(),
+						dateTime: ending,
 						timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 					},
 					attendees: [{ email: patientEmail }, { email: doctorEmail }],
@@ -98,24 +68,26 @@ export const useGoogleCalendar = (doctorEmail) => {
 				{
 					headers: {
 						Authorization: `Bearer ${user.access_token}`,
+						'Content-Type': 'application/json',
 					},
 				}
 			);
 
 			// Actualizar los eventos locales después de programar la cita
-			setEvents((prevEvents) => [
-				...prevEvents,
-				{
-					summary: 'Appointment',
-					description: `Appointment with ${patientEmail}`,
-					start: start,
-					end: end,
-				},
-			]);
+			// setEvents((prevEvents) => [
+			// 	...prevEvents,
+			// 	{
+			// 		summary: 'Appointment',
+			// 		description: `Appointment with ${patientEmail}`,
+			// 		start: start,
+			// 		end: end,
+			// 	},
+			// ]);
+			// fetchEvents();
 
 			return true;
 		} catch (error) {
-			console.error('Error scheduling appointment:', error);
+			console.error('Error de agendamiento:', error);
 			return false;
 		}
 	};

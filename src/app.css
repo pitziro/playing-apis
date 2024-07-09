@@ -1,0 +1,32 @@
+#root {
+   max-width: 1280px;
+   margin: 0 auto;
+   padding: 2rem;
+   text-align: center;
+}
+
+.rbc-toolbar {
+   flex-direction: row-reverse;
+}
+
+.rbc-current-time-indicator {
+   height: 2px !important;
+   background-color: red !important;
+}
+
+.event-title {
+   display: flex;
+   align-items: center;
+   & img {
+      height: 15px;
+   }
+}
+
+.rbc-event-content {
+   display: flex;
+   align-items: center;
+}
+
+.rbc-event-label {
+   display: none !important;
+}

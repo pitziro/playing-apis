@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../context/userContext'
 
 export const CheckAgenda = () => {
@@ -52,7 +52,7 @@ export const CheckAgenda = () => {
                   timeMax: new Date(
                      Date.now() + 90 * 24 * 60 * 60 * 1000
                   ).toISOString(),
-                  items: [{ id: guestEmail }],
+                  items: [{ id: guestEmail, busy: 'Active' }],
                }),
             }
          )
@@ -74,8 +74,8 @@ export const CheckAgenda = () => {
 
    async function searchAgenda() {
       setEmailDone(true)
-      // fetchEvents()
-      freeBusy()
+      fetchEvents()
+      // freeBusy()
    }
 
    return (

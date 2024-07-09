@@ -1,24 +1,25 @@
+import './app.css'
+
 import Reserva from './pages/Reserva'
 
 import { UserContext } from './context/userContext'
 import { useContext } from 'react'
-import { CheckAgenda } from './pages/CheckAgenda'
+// import { CheckAgenda } from './pages/CheckAgenda'
 
-//import Calendar from './components/Calendar';
-import LoginButton from './components/LoginButton'
+import BCalendar from './pages/BCalendar'
+// import LoginButton from './components/LoginButton'
 
 function App() {
    const { user } = useContext(UserContext)
 
    return (
       <>
-         <Reserva />
-         <hr />
-         {!user && <LoginButton />}
-
+         {/* <Reserva /> */}
+         {/* {!user && <LoginButton />} */}
          {/* <Calendar doctorEmail={inputDoctorEmail} /> */}
+         {/* <CheckAgenda /> */}
 
-         <CheckAgenda />
+         <BCalendar />
       </>
    )
 }

@@ -30,3 +30,27 @@
 .rbc-event-label {
    display: none !important;
 }
+
+.formulario {
+   display: flex;
+   flex-direction: column;
+   width: 25%;
+
+   & input {
+      margin-top: 10px;
+   }
+
+   & .inputError {
+      border: 0.5px solid red;
+   }
+
+   & .errorDetail {
+      color: red;
+      font-size: 0.7em;
+      text-align: left;
+   }
+
+   & button {
+      margin-top: 10px;
+   }
+}

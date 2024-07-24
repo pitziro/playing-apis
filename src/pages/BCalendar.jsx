@@ -24,6 +24,8 @@ export default function BCalendar() {
    const [showModalNewMeeting, setShowModalNewMeeting] = useState(false)
    const [showModalDetails, setShowModalDetails] = useState(false)
 
+   const minDate = dayjs().toDate()
+
    const stylesCal = {
       height: 500,
       width: '75vw',
@@ -65,7 +67,9 @@ export default function BCalendar() {
    }
 
    const handleNavigate = date => {
-      setCustomDay(date)
+      if (date > minDate) {
+         setCustomDay(date)
+      }
    }
 
    const onView = viewData => {
@@ -78,7 +82,7 @@ export default function BCalendar() {
       if (customDay && dayjs(date).isSame(customDay, 'day')) {
          return {
             style: {
-               backgroundColor: '#ffdddd',
+               backgroundColor: '#ffdddd', //rosado
             },
          }
       }
